@@ -82,11 +82,14 @@ jobs:
           severity: CRITICAL,HIGH
           skip-files: '**/pip/_vendor/bom.cdx.json'
 
+  # The AWS environment is torn down. This job runs only when the repository variable
+  # DEPLOY_ENABLED is set to 'true'; unset (the default) skips deployment.
   cd:
     name: Deploy to S3
     needs: [ci, stage-security]
     if: >-
       always() &&
+      vars.DEPLOY_ENABLED == 'true' &&
       github.event_name == 'push' &&
       needs.ci.result == 'success' &&
       (github.ref == 'refs/heads/dev' || needs.stage-security.result == 'success')

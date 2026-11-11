@@ -2,7 +2,7 @@
 
 This project demonstrates a secure, traceable CI/CD connection between GitHub Actions and AWS. A change moves through GitHub branches, is tested and security-scanned, and is then deployed to an Amazon S3 static website using short-lived AWS credentials obtained through GitHub OIDC.
 
-**Status: historical demo; the S3 website currently returns 404. Validation level: run on real cloud.** Current CI validates the application and security gates; this maintenance change does not prove a live deployment.
+**Status: the AWS environment is torn down; the S3 website returns 404. The `Deploy to S3` job is disabled unless the repository variable `DEPLOY_ENABLED` is `true` (default: unset). Validation level: run on real cloud.** Current CI validates the application and security gates; this maintenance change does not prove a live deployment.
 
 ## Executive summary
 
