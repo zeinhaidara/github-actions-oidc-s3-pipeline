@@ -2,7 +2,7 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-ENV APP_HOST=0.0.0.0
+ENV APP_HOST=0.0.0.0 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 
 COPY requirements.txt .
 
@@ -15,7 +15,9 @@ RUN apt-get update \
     && rm -rf /usr/local/lib/python3.13/site-packages/msgpack-1.1.2.dist-info \
               /usr/local/lib/python3.13/site-packages/setuptools-70.3.0.dist-info
 
-COPY app ./app
+RUN groupadd --gid 10001 app && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin app
+COPY --chown=10001:10001 app ./app
+USER 10001:10001
 
 EXPOSE 8080
 

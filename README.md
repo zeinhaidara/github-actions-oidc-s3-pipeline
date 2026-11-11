@@ -1,6 +1,8 @@
-# Project 1: GitHub Actions to AWS CI/CD
+# GitHub Actions OIDC delivery to Amazon S3
 
 This project demonstrates a secure, traceable CI/CD connection between GitHub Actions and AWS. A change moves through GitHub branches, is tested and security-scanned, and is then deployed to an Amazon S3 static website using short-lived AWS credentials obtained through GitHub OIDC.
+
+**Status: historical demo; the S3 website currently returns 404. Validation level: run on real cloud.** Current CI validates the application and security gates; this maintenance change does not prove a live deployment.
 
 ## Executive summary
 
@@ -20,6 +22,15 @@ The main security objective was to connect GitHub to AWS without storing long-li
 - Troubleshoot real CI/CD, IAM, Docker, Git, and S3 failures.
 
 ## Architecture
+
+```mermaid
+flowchart LR
+    Feature[Feature branch] --> PR[Pull request] --> CI[Tests and security gates]
+    CI --> Promotion[dev / stage / main promotion]
+    Promotion --> OIDC[GitHub OIDC token]
+    OIDC --> STS[AWS STS short-lived role session]
+    STS --> S3[S3 static website and deployment proof]
+```
 
 ```text
 Developer
@@ -51,7 +62,7 @@ GitHub feature branch -> Pull request -> dev -> stage -> main
 
 | Resource | Value |
 |---|---|
-| AWS account | `866934333672` |
+| AWS account | `<account-id>` |
 | AWS Region | `us-east-2` |
 | S3 bucket | `cloudbatch818` |
 | IAM role | `GitHubActionsCICDRole-cloudbatch818-zein` |
@@ -64,9 +75,9 @@ GitHub feature branch -> Pull request -> dev -> stage -> main
 Important ARNs:
 
 ```text
-arn:aws:iam::866934333672:role/GitHubActionsCICDRole-cloudbatch818-zein
+arn:aws:iam::<account-id>:role/GitHubActionsCICDRole-cloudbatch818-zein
 
-arn:aws:iam::866934333672:oidc-provider/token.actions.githubusercontent.com
+arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com
 ```
 
 Static website endpoint used by the lab:
@@ -304,7 +315,7 @@ Not authorized to perform sts:AssumeRoleWithWebIdentity
 **Verification:** The workflow successfully returned an assumed-role identity similar to:
 
 ```text
-arn:aws:sts::866934333672:assumed-role/GitHubActionsCICDRole-cloudbatch818-zein/GitHubActions
+arn:aws:sts::<account-id>:assumed-role/GitHubActionsCICDRole-cloudbatch818-zein/GitHubActions
 ```
 
 ### The CD runner could not find `site/`
